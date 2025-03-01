@@ -1,0 +1,517 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+body {
+  background: #f5f5f5;
+  height: 100vh;
+  display: flex;
+}
+
+.container {
+  width: 100%;
+  height: 100vh;
+  background: #ffffff;
+  display: flex;
+  overflow: hidden;
+}
+
+/* Initially hide sidebar using transform */
+.sidebar {
+  width: 280px;
+  background: #f8f9fa;
+  border-right: 1px solid #e9ecef;
+  padding: 20px;
+  position: fixed;
+  height: 100vh;
+  z-index: 1000;
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+}
+
+.sidebar.active {
+  transform: translateX(0);
+}
+
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.close-sidebar {
+  background: none;
+  border: none;
+  color: #4a5568;
+  cursor: pointer;
+  padding: 8px;
+}
+
+.chat-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  transition: margin-left 0.3s ease;
+}
+
+.menu-toggle {
+  background: none;
+  border: none;
+  padding: 12px;
+  color: #4a5568;
+  display: none;
+  font-size: 20px;
+}
+
+.chat-header {
+  padding: 20px;
+  border-bottom: 1px solid #e9ecef;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.chat-header h2 {
+  color: #202123;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+#chat-box {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.message {
+  max-width: 90%;
+  padding: 16px 20px;
+  border-radius: 12px;
+  line-height: 1.5;
+  opacity: 0;
+  animation: messageAppear 0.3s ease-out forwards;
+}
+
+/* User messages (align right) */
+.user-message {
+  position: relative; /* For absolute positioning of the pointer */
+  background: #f3f3f3;
+  color: black;
+  align-self: flex-end;
+  padding: 10px 15px;
+  margin: 10px;
+  border-top-right-radius: 4px; /* Tail effect on top-right */
+  border-radius: 8px;           /* Overall rounded corners */
+}
+
+/* Pointer for user messages */
+.user-message::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: -6px;               /* Position pointer at the right edge */
+  width: 12px;
+  height: 12px;
+  background: #f3f3f3;
+  clip-path: polygon(100% 0, 0 0, 0 100%);
+}
+
+/* AI messages (align left) */
+.ai-message {
+  position: relative; /* For absolute positioning of the pointer */
+  background: white;
+  color: black;
+  align-self: flex-start;
+  padding: 10px 15px;
+  margin: 10px;
+  border-top-left-radius: 4px;  /* Tail effect on top-left */
+  border-radius: 8px;           /* Overall rounded corners */
+}
+
+/* Pointer for AI messages */
+.ai-message::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -6px;               /* Position pointer at the left edge */
+  width: 12px;
+  height: 12px;
+  background: white;
+  clip-path: polygon(0 0, 100% 0, 100% 100%);
+}
+
+
+.input-section {
+  padding: 20px;
+  border-top: 1px solid #e9ecef;
+  background: #ffffff;
+  position: relative;
+}
+
+/* Make the wrapper relative so that we can absolutely position the button */
+.input-wrapper {
+  position: relative;
+}
+
+/* Style the input to have extra right padding for the button */
+#user-input {
+  width: 100%;
+  padding: 14px 60px 14px 20px;  /* Extra right padding for the circular button */
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+#user-input:focus {
+  border-color: #10a37f;
+}
+
+/* Circular share button positioned inside the input field */
+#send-btn {
+  font-size: medium;
+  position: absolute;
+  top: 50%;
+  right: 20px;            /* Adjust to position inside the input */
+  transform: translateY(-50%);
+  width: 40px;            /* Fixed width */
+  height: 40px;           /* Fixed height for a perfect circle */
+  background: #10a37f;
+  color: white;
+  border: none;
+  border-radius: 50%;     /* Makes it circular */
+  cursor: pointer;
+  transition: background 0.2s;
+  display: flex;          /* Center icon */
+  align-items: center;
+  justify-content: center;
+}
+
+#send-btn:hover {
+  background: #0d8a6a;
+}
+
+
+.typing-indicator {
+  display: none;
+  padding: 12px;
+  color: #6b7280;
+  text-align: center;
+}
+
+.dot-flashing {
+  position: relative;
+  width: 8px;
+  height: 8px;
+  border-radius: 5px;
+  background-color: #10a37f;
+  color: #10a37f;
+  animation: dotFlashing 1s infinite linear alternate;
+  animation-delay: 0.5s;
+  margin: 0 auto;
+}
+
+.dot-flashing::before,
+.dot-flashing::after {
+  content: '';
+  display: inline-block;
+  position: absolute;
+  top: 0;
+}
+
+.dot-flashing::before {
+  left: -12px;
+  width: 8px;
+  height: 8px;
+  border-radius: 5px;
+  background-color: #10a37f;
+  color: #10a37f;
+  animation: dotFlashing 1s infinite alternate;
+  animation-delay: 0s;
+}
+
+.dot-flashing::after {
+  left: 12px;
+  width: 8px;
+  height: 8px;
+  border-radius: 5px;
+  background-color: #10a37f;
+  color: #10a37f;
+  animation: dotFlashing 1s infinite alternate;
+  animation-delay: 1s;
+}
+
+@keyframes messageAppear {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes dotFlashing {
+  0% {
+    background-color: #10a37f;
+  }
+  50%, 100% {
+    background-color: rgba(16, 163, 127, 0.2);
+  }
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100%;
+    transform: translateX(-100%);
+  }
+  
+  .menu-toggle {
+    display: block;
+  }
+  
+  .chat-area {
+    margin-left: 0;
+  }
+  
+  .message {
+    max-width: 85%;
+  }
+}
+
+.chat-history {
+  margin-top: 20px;
+}
+
+.chat-history h3 {
+  color: #4a5568;
+  font-size: 1rem;
+  margin-bottom: 12px;
+}
+
+#chat-list {
+  list-style: none;
+  overflow-y: auto;
+  max-height: calc(100vh - 200px);
+}
+
+.chat-item {
+  padding: 12px;
+  margin: 8px 0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid #e9ecef;
+}
+
+.chat-item:hover {
+  background: #f8f9fa;
+}
+
+.chat-item.active {
+  background: #e3faf2;
+  border-color: #10a37f;
+}
+
+.chat-item time {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.trash-icon {
+  color: #e53e3e;
+  padding: 4px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.chat-item:hover .trash-icon {
+  opacity: 1;
+}
+
+/* Updated CSS for sidebar behavior */
+/* Always show the menu toggle */
+.menu-toggle {
+  display: block !important;
+  background: none;
+  border: none;
+  padding: 12px;
+  color: #4a5568;
+  cursor: pointer;
+}
+
+/* Desktop specific styles */
+@media (min-width: 769px) {
+  .sidebar {
+    position: relative;
+    transform: translateX(-100%);
+    height: 100vh;
+  }
+  
+  .sidebar.active {
+    transform: translateX(0);
+  }
+  
+  .sidebar.active ~ .chat-area {
+    margin-left: 280px;
+  }
+  
+  .menu-toggle {
+    position: absolute;
+    left: 20px;
+  }
+  
+  .chat-header h2 {
+    margin-left: 40px;
+  }
+}
+
+/* Mobile specific styles */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100%;
+  }
+  
+  .sidebar.active ~ .chat-area {
+    margin-left: 0;
+  }
+}
+/* Add/Update these CSS rules */
+.sidebar {
+  width: 280px;
+  background: #f8f9fa;
+  border-right: 1px solid #e9ecef;
+  padding: 20px;
+  position: fixed;
+  height: 100vh;
+  z-index: 1000;
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+}
+
+.sidebar.active {
+  transform: translateX(0);
+}
+
+.menu-toggle {
+  display: block;
+  background: none;
+  border: none;
+  padding: 12px;
+  color: #4a5568;
+  cursor: pointer;
+  position: absolute;
+  left: 20px;
+  top: 20px;
+  z-index: 100;
+}
+
+/* Desktop specific behavior */
+@media (min-width: 769px) {
+  .sidebar {
+    position: relative;
+    transform: translateX(-100%);
+  }
+  
+  .sidebar.active {
+    transform: translateX(0);
+  }
+  
+  .sidebar.active ~ .chat-area {
+    margin-left: 280px;
+  }
+}
+
+/* Mobile specific behavior */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100%;
+  }
+  
+  .menu-toggle {
+    position: static;
+    margin-right: 15px;
+  }
+}
+.new-chat-btn {
+  background-color: #10a37f;      /* Primary blue color */
+  color: #fff;                    /* White text */
+  border: none;                   /* No border */
+  border-radius: 4px;             /* Slightly rounded corners */
+  padding: 10px 20px;             /* Vertical and horizontal padding */
+  font-size: 16px;                /* Base font size */
+  display: inline-flex;           /* Use flex for icon alignment */
+  align-items: center;            /* Center icon vertically */
+  cursor: pointer;                /* Pointer cursor on hover */
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+/* Styling for the icon inside the button */
+.new-chat-btn i {
+  margin-right: 8px;              /* Spacing between icon and text */
+  font-size: 18px;                /* Slightly larger icon */
+}
+
+/* Hover effect for the button */
+.new-chat-btn:hover {
+  background-color: #0d8a6a;      /* Darker blue on hover */
+  transform: scale(1.05);         /* Slightly enlarge the button on hover */
+}
+
+/* Focus effect for accessibility */
+.new-chat-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.5);
+}
+.close-sidebar {
+  font-size: 24px;    /* Set the icon size */
+  background: none;   /* Remove any background */
+  border: none;       /* Remove default border */
+  cursor: pointer;    /* Change cursor on hover */
+  outline: none;      /* Remove focus outline */
+  color: inherit;     /* Inherit text color from parent */
+  padding: 5px;       /* Optional padding */
+}
+
+/* Optional: Hover effect for visual feedback */
+.close-sidebar:hover {
+  color: #555;        /* Change color on hover, adjust as needed */
+}
+.made-by {
+  text-align: center;
+  padding: 12px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #fff;
+  background: linear-gradient(45deg, #4fd1c5, #38b2ac, #68d391);
+  border-top: 2px solid #fff;
+  border-radius: 8px;
+  box-shadow: 0px -2px 5px rgba(255, 255, 255, 0.2);
+  animation: glow 1.5s infinite alternate;
+}
+
+/* Glowing text effect */
+@keyframes glow {
+  0% {
+      text-shadow: 0px 0px 5px rgba(255, 255, 255, 0.5);
+  }
+  100% {
+      text-shadow: 0px 0px 15px rgba(255, 255, 255, 1);
+  }
+}

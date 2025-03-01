@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gyan 2.0 - AI Assistant</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <div class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <button class="new-chat-btn" id="new-chat-btn">
+          <i class="fa-solid fa-comment-medical"></i>
+          New Chat
+        </button>
+        <button class="close-sidebar" id="close-sidebar">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i>
+        </button>
+      </div>
+      <div class="chat-history">
+        <h3>Chat History</h3>
+        <ul id="chat-list"></ul>
+      </div>
+      <div class="made-by">Made by: Parbhansh with ❤️</div>
+    </div>
+    
+    <div class="chat-area">
+      <div class="chat-header">
+        <button class="menu-toggle" id="menu-toggle">
+          <i class="fa-solid fa-clock-rotate-left"></i>
+        </button>
+        <h2>Gyan 2.0</h2>
+      </div>
+      
+      <div id="chat-box"></div>
+      
+      <div class="typing-indicator" id="typing-indicator">
+        <div class="dot-flashing"></div>
+      </div>
+
+      <div class="input-section">
+        <div class="input-wrapper">
+          <input type="text" id="user-input" placeholder="Ask anything Gyan 2.0...">
+          <button id="send-btn">
+            <i class="fa-solid fa-arrow-up"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
